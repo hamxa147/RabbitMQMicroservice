@@ -36,25 +36,33 @@ namespace AuthenticationMicroservice.Consumers
 
                 if (user == null)
                 {
-                    await context.RespondAsync<AuthenticationResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        Token = "",
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Invalid Credentials",
+                        Result = new { Token = "" }
                     });
                 }
                 else
                 {
                     var token = _jwtTokenGenerator.GenerateToken(user);
-                    await context.RespondAsync<AuthenticationResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        Token = token,
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Token Generated Sucessfully",
+                        Result = new { Token = token }
                     });
                 }
             }
             catch (Exception ex)
             {
-                await context.RespondAsync<AuthenticationResponse>(new
+                _logger.LogInformation("Authentication Consumer gave exception: {Exception}", ex);
+                _logger.LogInformation("Authentication Consumer Data: {@Message}", context.Message);
+                await context.RespondAsync<ApiResponse>(new
                 {
-                    Token = "Exception" + ex.Message,
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Some exception occured: " + ex,
+                    Result = new { Token = "" }
                 });
             }
         }

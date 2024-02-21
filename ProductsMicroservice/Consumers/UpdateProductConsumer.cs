@@ -60,21 +60,34 @@ namespace ProductsMicroservice.Consumers
                         }
                     }
 
-                    await context.RespondAsync<ProductResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        Id,
-                        Name
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Product updated successfully",
+                        Result = new { Product = product }
                     });
                 }
                 else
                 {
-                    await context.RespondAsync<ProductResponse>(null);
+                    _logger.LogInformation("UpdateProductConsumer error while update data: {Exception}", context.Message);
+                    await context.RespondAsync<ApiResponse>(new
+                    {
+                        StatusCode = StatusCodes.Status500InternalServerError,
+                        Message = "Error occured while updating the resource",
+                        Result = new { }
+                    });
                 }
-
             }
             catch (Exception ex)
             {
-                await context.RespondAsync<ProductResponse>(null);
+                _logger.LogInformation("UpdateProductConsumer gave exception: {Exception}", ex);
+                _logger.LogInformation("UpdateProductConsumer Data: {@Message}", context.Message);
+                await context.RespondAsync<ApiResponse>(new
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Some exception occured: " + ex,
+                    Result = new {  }
+                });
             }
         }
     }

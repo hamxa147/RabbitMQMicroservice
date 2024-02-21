@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationMicroservice"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductsMicroservice", "ProductsMicroservice\ProductsMicroservice.csproj", "{B77A3922-C72A-4FC5-A6F7-D567664DCB83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{FACBE5CD-A49B-4468-AC59-84240CD6CB72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csproj", "{FACBE5CD-A49B-4468-AC59-84240CD6CB72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedMessages", "Shared\SharedMessages.csproj", "{6A4C4186-9764-48EC-BDF5-AB9D1CA76CE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedMessages", "Shared\SharedMessages.csproj", "{6A4C4186-9764-48EC-BDF5-AB9D1CA76CE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI", "WebUI\WebUI.csproj", "{D5C039FC-EBEC-4818-A2CB-DEFC5A877E05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6A4C4186-9764-48EC-BDF5-AB9D1CA76CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A4C4186-9764-48EC-BDF5-AB9D1CA76CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A4C4186-9764-48EC-BDF5-AB9D1CA76CE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5C039FC-EBEC-4818-A2CB-DEFC5A877E05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5C039FC-EBEC-4818-A2CB-DEFC5A877E05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5C039FC-EBEC-4818-A2CB-DEFC5A877E05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5C039FC-EBEC-4818-A2CB-DEFC5A877E05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using SharedMessages.Commands;
 using System.Text;
 using WebApi.Authorization;
+using WebApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -30,12 +31,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-//builder.Services.AddScoped<AuthorizationCheckOperation>(); ;
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
-    //c.OperationFilter<AuthorizationCheckOperation>();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme",
@@ -58,6 +56,10 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
+builder.Services.AddCors();
+
+builder.Services.AddSignalR();
+
 builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
@@ -69,7 +71,6 @@ builder.Services.AddMassTransit(busConfigurator =>
             h.Password(configuration["Rabbitmq:Password"]);
         });
     });
-    //busConfigurator.AddRequestClient<ILoginEvent>();
 });
 
 var app = builder.Build();
@@ -80,6 +81,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x => x.AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .SetIsOriginAllowed(origin => true) // allow any origin
+                  .AllowCredentials());
+
+app.MapHub<ProductHub>("/productHub");
 
 app.UseAuthentication();
 

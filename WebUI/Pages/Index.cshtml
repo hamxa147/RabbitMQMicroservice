@@ -1,0 +1,68 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+
+    .log-container {
+        background-color: #333;
+        padding: 10px;
+        border-radius: 5px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .log-item {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <div id="log" class="log-container"></div>
+
+</div>
+
+<!--Reference the SignalR library. -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:5017/productHub")
+            .build();
+
+        connection.Closed += async (exception) => {
+            // Handle connection closed or error
+            // Implement reconnect logic here
+            await Task.Delay(TimeSpan.FromSeconds(5)); // Wait before attempting to reconnect
+            await connection.StartAsync();
+        };
+
+        connection.on("NofityLogs", function (result, message) {
+            var logElement = document.getElementById("log");
+
+            var productLog = document.createElement("div");
+            productLog.textContent = message + ` Status Code: "${result.statusCode}", Message: "${result.message}"` + (result?.result?.product ? ", Entity { Id: " + result?.result?.product?.id + ", Name: " + result?.result?.product?.name + " }" : "");
+            productLog.classList.add("log-item");
+            logElement.appendChild(productLog);
+        });
+
+        connection.start().then(function () {
+            console.log("Connected to hub.");
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+    })
+</script>

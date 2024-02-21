@@ -34,38 +34,53 @@ namespace ProductsMicroservice.Consumers
 
                 var productName = context.Message.Name;
 
-                var product = new { Name = productName };
                 int productId = await connection.QuerySingleAsync<int>(sql, new { context.Message.Name });
 
                 if (productId > 0)
                 {
                     var key = _configuration["ProductCacheKey"] + productId;
                     var listKey = _configuration["ProductCacheKey"] + "list";
-                    
+
                     var newProduct = new Products() { Id = productId, Name = productName };
                     await _redisCache.SetAsync(key, newProduct, TimeSpan.FromMinutes(5));
 
                     // Fetch all the product list and update the instance for the updated product
                     var productList = await _redisCache.GetAsync<List<Products>>(listKey);
-                    productList.Add(newProduct);
+                    if (productList?.Count > 0)
+                    {
+                        productList.Add(newProduct);
+                    }
 
                     await _redisCache.UpdateAsync(listKey, productList, TimeSpan.FromMinutes(5));
 
-                    await context.RespondAsync<ProductResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        Id = productId,
-                        Name = productName
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Success",
+                        Result = new { Product = newProduct }
                     });
                 }
                 else
                 {
-                    await context.RespondAsync<ProductResponse>(null);
+                    await context.RespondAsync<ApiResponse>(new
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Product not found",
+                        Result = new { }
+                    });
                 }
 
             }
             catch (Exception ex)
             {
-                await context.RespondAsync<ProductResponse>(null);
+                _logger.LogInformation("CreateProductConsumer gave exception: {Exception}", ex);
+                _logger.LogInformation("CreateProductConsumer Data: {@Message}", context.Message);
+                await context.RespondAsync<ApiResponse>(new
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Some exception occured: " + ex,
+                    Result = new { }
+                });
             }
         }
     }

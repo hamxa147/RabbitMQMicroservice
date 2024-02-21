@@ -8,6 +8,20 @@ var configuration = builder.Configuration;
 
 builder.Services.AddSingleton<DapperContext>();
 
+//builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowSpecificOrigin",
+//         builder =>
+//         {
+//             builder.WithOrigins("http://localhost:5284")
+//                    .AllowAnyHeader()
+//                    .AllowAnyMethod()
+//                    .AllowCredentials();
+//         });
+// });
+
+//builder.Services.AddSignalR();
+
 builder.Services.AddMassTransit(busConfigurator =>
 {
     // Register consumers
@@ -55,5 +69,9 @@ builder.Services.AddMassTransit(busConfigurator =>
 });
 
 var app = builder.Build();
+
+//app.UseCors("AllowSpecificOrigin");
+
+//app.MapHub<ProductHub>("/productHub");
 
 app.Run();

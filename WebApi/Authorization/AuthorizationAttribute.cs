@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using SharedMessages.Response;
 
 namespace WebApi.Authorization
 {
@@ -17,7 +18,18 @@ namespace WebApi.Authorization
         {
             if (!context.HttpContext.User.Identity.IsAuthenticated)
             {
-                context.Result = new UnauthorizedResult();
+                var response = new ApiResponse
+                {
+                    StatusCode = StatusCodes.Status401Unauthorized,
+                    Message = "Unauthorized",
+                    Result = ""
+                };
+
+                context.Result = new JsonResult(response)
+                {
+                    StatusCode = StatusCodes.Status401Unauthorized
+                };
+
                 return;
             }
 
@@ -25,7 +37,17 @@ namespace WebApi.Authorization
             var hasAccessClaim = context.HttpContext.User.HasClaim(c => c.Type == ClaimType && c.Value == "True");
             if (!hasAccessClaim)
             {
-                context.Result = new ForbidResult();
+                var response = new ApiResponse
+                {
+                    StatusCode = StatusCodes.Status403Forbidden,
+                    Message = "Forbidden: You do not have access to this resource.",
+                    Result = ""
+                };
+
+                context.Result = new JsonResult(response)
+                {
+                    StatusCode = StatusCodes.Status401Unauthorized
+                };
                 return;
             }
         }

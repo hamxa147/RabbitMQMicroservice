@@ -43,31 +43,44 @@ namespace ProductsMicroservice.Consumers
 
                     await _redisCache.RemoveAsync(key);
                     var productList = await _redisCache.GetAsync<List<Products>>(listKey);
-                    if (productList.Count > 0)
+
+                    var productToRemove = productList.FirstOrDefault(x => x.Id == Id);
+
+                    if (productToRemove != null)
                     {
-                        var productToRemove = productList.FirstOrDefault(x => x.Id == Id);
-                        if (productToRemove != null)
-                        {
-                            productList.Remove(productToRemove);
-                        }
+                        productList.Remove(productToRemove);
                     }
 
                     await _redisCache.UpdateAsync(listKey, productList, TimeSpan.FromMinutes(5));
 
-                    await context.RespondAsync<ProductResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        Id
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Success",
+                        Result = new { Product = productToRemove }
                     });
                 }
                 else
                 {
-                    await context.RespondAsync<ProductResponse>(null);
+                    await context.RespondAsync<ApiResponse>(new
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Product not found: ",
+                        Result = new { }
+                    });
                 }
 
             }
             catch (Exception ex)
             {
-                await context.RespondAsync<ProductResponse>(null);
+                _logger.LogInformation("DeleteProductConsumer gave exception: {Exception}", ex);
+                _logger.LogInformation("DeleteProductConsumer Data: {@Message}", context.Message);
+                await context.RespondAsync<ApiResponse>(new
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Some exception occured: " + ex,
+                    Result = new { }
+                });
             }
         }
     }

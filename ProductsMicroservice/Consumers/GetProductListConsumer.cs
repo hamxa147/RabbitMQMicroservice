@@ -6,7 +6,7 @@ using SharedMessages.Response;
 using ProductsMicroservice.Data;
 using ProductsMicroservice.Entities;
 using ProductsMicroservice.Interfaces;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
+using System;
 
 namespace ProductsMicroservice.Consumers
 {
@@ -37,9 +37,11 @@ namespace ProductsMicroservice.Consumers
 
                 if (result is not null)
                 {
-                    await context.RespondAsync<ProductListResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        Products = result,
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Success",
+                        Result = new { Products = result }
                     });
                     return;
                 }
@@ -50,25 +52,25 @@ namespace ProductsMicroservice.Consumers
 
                 if (products.Count > 0)
                 {
+
                     await _redisCache.SetAsync(key, products, TimeSpan.FromMinutes(5));
-                    await context.RespondAsync<ProductListResponse>(new
-                    {
-                        Products = products,
-                    });
                 }
-                else
+                await context.RespondAsync<ApiResponse>(new
                 {
-                    await context.RespondAsync<ProductListResponse>(new
-                    {
-                        Products = new List<Products>()
-                    });
-                }
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Success",
+                    Result = new { Products = products }
+                });
             }
             catch (Exception ex)
             {
-                await context.RespondAsync<ProductListResponse>(new
+                _logger.LogInformation("GetProductListConsumer gave exception: {Exception}", ex);
+                _logger.LogInformation("GetProductListConsumer Data: {@Message}", context.Message);
+                await context.RespondAsync<ApiResponse>(new
                 {
-                    Products = new List<Products>(),
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Some exception occured: " + ex,
+                    Result = new { }
                 });
             }
         }

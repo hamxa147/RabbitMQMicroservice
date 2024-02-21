@@ -36,10 +36,11 @@ namespace ProductsMicroservice.Consumers
 
                 if (result is not null)
                 {
-                    await context.RespondAsync<ProductResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        result.Id,
-                        result.Name
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Success",
+                        Result = new { Product = result }
                     });
                     return;
                 }
@@ -51,23 +52,33 @@ namespace ProductsMicroservice.Consumers
 
                 if (product is null)
                 {
-                    await context.RespondAsync<ProductResponse>(null);
+                    await context.RespondAsync<ApiResponse>(new
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Not found",
+                        Result = new {  }
+                    });
                 }
                 else
                 {
                     await _redisCache.SetAsync(key, product, TimeSpan.FromMinutes(5));
-                    await context.RespondAsync<ProductResponse>(new
+                    await context.RespondAsync<ApiResponse>(new
                     {
-                        product.Id,
-                        product.Name
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Success",
+                        Result = new { Product = product }
                     });
                 }
             }
             catch (Exception ex)
             {
-                await context.RespondAsync<ProductResponse>(new
+                _logger.LogInformation("GetProductByIdConsumer gave exception: {Exception}", ex);
+                _logger.LogInformation("GetProductByIdConsumer Data: {@Message}", context.Message);
+                await context.RespondAsync<ApiResponse>(new
                 {
-                    Name = "ERRRRRORRRR"
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Some exception occured: " + ex,
+                    Result = new { }
                 });
             }
         }

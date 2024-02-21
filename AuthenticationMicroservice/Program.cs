@@ -36,7 +36,6 @@ builder.Services.AddMassTransit(busConfigurator =>
             ep.ConfigureConsumer<AuthenticationConsumer>(context);
         });
     });
-    //busConfigurator.AddRequestClient<ILoginEvent>();
 });
 
 var app = builder.Build();
