@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using SharedMessages.Events;
+using SharedMessages.Commands;
 using SharedMessages.Response;
 using WebApi.Models.Authentication;
 
@@ -11,11 +11,10 @@ namespace WebApi.Controllers
     [Route("api/[controller]")]
     public class AuthenticationController : ControllerBase
     {
-
-        private readonly IRequestClient<ILoginEvent> _loginEventRequestClient;
+        private readonly IRequestClient<IAuthenticateUser> _loginEventRequestClient;
         private readonly ILogger<AuthenticationDTO> _logger;
 
-        public AuthenticationController(ILogger<AuthenticationDTO> logger, IRequestClient<ILoginEvent> loginEventRequestClient)
+        public AuthenticationController(ILogger<AuthenticationDTO> logger, IRequestClient<IAuthenticateUser> loginEventRequestClient)
         {
             _logger = logger;
             _loginEventRequestClient = loginEventRequestClient;

@@ -1,14 +1,15 @@
 using MassTransit;
+using Microsoft.Extensions.Options;
 using AuthenticationMicroservice.Data;
 using AuthenticationMicroservice.Consumers;
-using AuthenticationMicroservice.Authentication;
-using Microsoft.Extensions.Options;
 using AuthenticationMicroservice.Interfaces;
+using AuthenticationMicroservice.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddSingleton<DapperContext>();
+
 var jwtSettings = new JwtSettings();
 configuration.Bind(JwtSettings.SectionName, jwtSettings);
 

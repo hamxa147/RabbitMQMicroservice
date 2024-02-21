@@ -1,15 +1,15 @@
-﻿using AuthenticationMicroservice.Authentication;
-using AuthenticationMicroservice.Data;
-using AuthenticationMicroservice.Entity;
-using AuthenticationMicroservice.Interfaces;
-using Dapper;
+﻿using Dapper;
 using MassTransit;
-using SharedMessages.Events;
+
+using SharedMessages.Commands;
 using SharedMessages.Response;
+using AuthenticationMicroservice.Data;
+using AuthenticationMicroservice.Entities;
+using AuthenticationMicroservice.Interfaces;
 
 namespace AuthenticationMicroservice.Consumers
 {
-    public class AuthenticationConsumer : IConsumer<ILoginEvent>
+    public class AuthenticationConsumer : IConsumer<IAuthenticateUser>
     {
         private readonly DapperContext _context;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
@@ -22,7 +22,7 @@ namespace AuthenticationMicroservice.Consumers
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task Consume(ConsumeContext<ILoginEvent> context)
+        public async Task Consume(ConsumeContext<IAuthenticateUser> context)
         {
             try
             {
@@ -46,15 +46,15 @@ namespace AuthenticationMicroservice.Consumers
                     var token = _jwtTokenGenerator.GenerateToken(user);
                     await context.RespondAsync<AuthenticationResponse>(new
                     {
-                        Token = "Found user",
+                        Token = token,
                     });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await context.RespondAsync<AuthenticationResponse>(new
                 {
-                    Token = "Exception",
+                    Token = "Exception" + ex.Message,
                 });
             }
         }

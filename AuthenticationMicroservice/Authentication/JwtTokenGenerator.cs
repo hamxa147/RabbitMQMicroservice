@@ -1,4 +1,4 @@
-﻿using AuthenticationMicroservice.Entity;
+﻿using AuthenticationMicroservice.Entities;
 using AuthenticationMicroservice.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

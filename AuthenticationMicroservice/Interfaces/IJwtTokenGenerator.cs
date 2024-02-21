@@ -1,4 +1,4 @@
-﻿using AuthenticationMicroservice.Entity;
+﻿using AuthenticationMicroservice.Entities;
 
 namespace AuthenticationMicroservice.Interfaces
 {

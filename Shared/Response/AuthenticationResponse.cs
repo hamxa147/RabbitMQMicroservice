@@ -8,7 +8,7 @@ namespace SharedMessages.Response
 {
     public class AuthenticationResponse
     {
-        public string Token { get; set; }
-        public string TokenExpiry { get; set; }
+        public string Token { get; set; } = "";
+        public string TokenExpiry { get; set; } = "";
     }
 }
